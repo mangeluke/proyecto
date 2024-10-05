@@ -57,9 +57,9 @@
                                 </a>
                             </td>
                             <td>
-                                <a href="" class="btn btn-danger">
-                                    <i class="bi bi-pencil"></i> Eliminar
-                                </a>
+                                <button onclick="confirmDelete('{{ route('deleteempleado.destroy', $empleado->id)}}')" class="btn btn-danger">
+                                    <i class="bi bi-trash"></i> Eliminar
+                                </button>
                             </td>
                           </tr>
                           @endforeach
@@ -82,13 +82,70 @@
 <script src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.print.min.js"></script>
 
 <script>
-    $(document).ready(function() {
-        $('#example').DataTable({
-            responsive: true,
-            dom: 'Bfrtip',
-            buttons: [
-                'copy', 'csv', 'excel', 'pdf', 'print'
-            ]
-        });
+$(document).ready(function() {
+    $('#example').DataTable({
+        responsive: true,
+        dom: 'Bfrtip',
+        buttons: [
+            'copy', 'csv', 'excel', 'pdf', 'print'
+        ]
     });
-    </script>
+});
+</script>
+<script>
+    function confirmDelete(deleteUrl) {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "¡No podrás revertir esto!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, eliminarlo!',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Crear un formulario dinámicamente
+                var form = document.createElement('form');
+                form.action = deleteUrl;
+                form.method = 'POST';
+
+                Swal.fire({
+                    title: 'Éxito',
+                    text: 'Eliminado Correctamente',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                });
+
+                // Agregar token CSRF
+                var csrfToken = document.createElement('input');
+                csrfToken.type = 'hidden';
+                csrfToken.name = '_token';
+                csrfToken.value = '{{ csrf_token() }}'; // Usar Blade para obtener el token CSRF
+
+                // Agregar input de método
+                var methodInput = document.createElement('input');
+                methodInput.type = 'hidden';
+                methodInput.name = '_method';
+                methodInput.value = 'DELETE';
+
+                form.appendChild(csrfToken);
+                form.appendChild(methodInput);
+
+                // Agregar el formulario al cuerpo y enviarlo
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    }
+</script>
+@if (session('success'))
+<script>
+    Swal.fire({
+        title: 'Éxito',
+        text: '{{ session('success') }}',
+        icon: 'success',
+        confirmButtonText: 'OK'
+    });
+</script>
+@endif

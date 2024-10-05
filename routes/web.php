@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\EmpleadoController;
 
+use App\Models\Event;
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -33,6 +35,17 @@ Route::middleware('auth')->group(function () {
 
     //ruta para editar los datos
     Route::get('/editempleado/{id}',[EmpleadoController::class,'edit'])->name('editempleado.index');
+
+    //ruta para actualizar los datos
+    Route::put('/updatempleado/{id}',[EmpleadoController::class,'update'])->name('updatempleado.update');
+
+    //ruta para eliminar un empleado
+    Route::delete('/deleteempleado/{id}', [EmpleadoController::class,'destroy'])->name('deleteempleado.destroy');
+
+    // calendario
+    Route::get('/eventos', function() {
+        return Event::all();
+    });
     
     Route::get('/agendacita', function(){
         return view('agendacita.index');

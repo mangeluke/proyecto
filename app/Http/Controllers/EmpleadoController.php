@@ -55,6 +55,26 @@ class EmpleadoController extends Controller
 
         //retornar a la ruta
          return to_route('empleado.index');
+
+        // Validar los datos del evento
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|string|max:255',
+            'start' => 'required|date|after_or_equal:now',
+            'datesemana' => 'required|date', // Asegúrate de validar el campo datesemana
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        // Si la validación es exitosa, guardar el evento
+        $event = new Event();
+        $event->title = $request->title;
+        $event->start = $request->start;
+        $event->datesemana = $request->datesemana; // Guarda el campo datesemana
+        $event->save();
+
+        return response()->json(['message' => 'Evento creado exitosamente.'], 201);
     }
 
     /**
@@ -80,16 +100,49 @@ class EmpleadoController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Empleado $empleado)
+    public function update(Request $request, $id)
     {
-        //
+       // Valida los datos enviados en el formulario
+       $request->validate([
+        'identificacion'=>'required',
+        'nombres' => 'required|string|max:255',
+        'apellidos' => 'required|string|max:255',
+        'correo' => 'required|string|max:255',
+        'direccion' => 'required',
+        'telefono' => 'required',
+        'tipocontrato' => 'required',
+        'datesemana' => 'required|date|after:today',
+    ]);
+
+    // Busca el empleado por su ID
+    $empleado = Empleado::findOrFail($id);
+
+    // Actualiza los datos del empleado con los valores enviados en el formulario
+    $empleado->update([
+        'identificacion' => $request->input('identificacion'),
+        'nombres' => $request->input('nombres'),
+        'apellidos' => $request->input('apellidos'),
+        'correo' => $request->input('correo'),
+        'direccion' => $request->input('direccion'),
+        'telefono' => $request->input('telefono'),
+        'tipocontrato' => $request->input('tipocontrato'),
+        'datesemana' => $request->input('datesemana'),
+    ]);
+        //mensaje
+        session()->flash('success', 'Datos actualizados correctamente');
+        //retornar a la ruta
+        return to_route('listaempleado.index');
+
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Empleado $empleado)
+    public function destroy($id)
     {
-        //
+        $empleado = Empleado::findOrFail($id);
+        $empleado->delete();
+        return to_route('listaempleado.index');
+
     }
 }
