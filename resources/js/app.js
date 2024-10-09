@@ -9,18 +9,22 @@ window.Alpine = Alpine;
 
 document.addEventListener('DOMContentLoaded', function() {
     const calendarEl = document.getElementById('calendar');
+    const dateInput = document.getElementById('datesemana');
+    const timeInput = document.getElementById('horaevento'); 
+
+    
 
     const calendar = new Calendar(calendarEl, {
         plugins: [ dayGridPlugin, interactionPlugin ],
         initialView: 'dayGridMonth',
-        events: '/eventos', // Cambia esta URL por tu endpoint
+        events: '/eventos',
 
         dateClick: function(info) {
-            const dateStr = info.dateStr;
+            const dateStr = info.dateStr; // Formato yyyy-mm-dd
 
-            // Obtener la fecha y hora actuales
+            // Obtener la fecha actual
             const now = new Date();
-            const selectedDateTime = new Date(dateStr + 'T00:00:00'); // Cambia según tu necesidad (hora)
+            const selectedDateTime = new Date(dateStr + 'T00:06:00'); 
 
             // Validar si la fecha seleccionada es anterior a la fecha actual
             if (selectedDateTime < now) {
@@ -35,14 +39,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 const eventData = {
                     title: title,
                     start: dateStr,
-                    allDay: true
+                    allDay: false
                 };
 
                 // Agregar evento al calendario
                 calendar.addEvent(eventData);
 
-                // Aquí puedes hacer una solicitud al servidor para guardar el evento
-                // fetch('/eventos', { method: 'POST', body: JSON.stringify(eventData) })
+                const selectedTime = timeInput.value || '06:00';
+
+                const fullDateTime = dateStr + 'T' + selectedTime;
+                
+                dateInput.value = fullDateTime; 
+
+                console.log("Fecha y hora seleccionadas:", fullDateTime);
+
             } else {
                 alert('Título del evento es obligatorio.');
             }
@@ -51,6 +61,5 @@ document.addEventListener('DOMContentLoaded', function() {
 
     calendar.render();
 });
-
 
 Alpine.start();

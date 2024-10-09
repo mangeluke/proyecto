@@ -86,8 +86,12 @@
                                     <label for="datesemana" class="font-semibold text-sm text-gray-900">
                                         Fecha y hora
                                     </label>
-                                    <input id="datesemana" name="datesemana" rows="4" class="mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-black" value="{{ $empleado->datesemana}}">
-                                    <div id="calendar"></div>
+                                    <input tupe="datetime" id="datesemana" name="datesemana" rows="4" class="mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-black" value="{{ $empleado->datesemana}}">
+                                    <label for="datesemana" class="font-semibold text-sm text-gray-900">
+                                        Hora del evento
+                                    </label>
+                                    <input type="time" id="horaevento" placeholder="Seleccionar hora"  rows="4" class="mt-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-black" required min="06:00" max="18:00">
+                                    <div id="calendar" class="pt-5"></div>
                                     </input>
 
                                 <!-- Botón de enviar -->
@@ -105,3 +109,22 @@
     </div>
     {{-- <div class="p-5" id='calendar'></div> --}}
 </x-app-layout>
+<script>
+    // Suponiendo que tienes un formulario con el id 'eventForm'
+const eventForm = document.getElementById('eventForm');
+const timeInput = document.getElementById('horaevento');
+
+eventForm.addEventListener('submit', function(e) {
+    e.preventDefault(); // Evita que se recargue la página
+
+    // Obtener el valor del input de hora
+    const selectedTime = timeInput.value;
+
+    // Comprobar si la hora está dentro del rango permitido
+    if (selectedTime < '06:00' || selectedTime > '18:00') {
+        alert('Por favor, selecciona una hora entre 6:00 AM y 6:00 PM.');
+        return; // Detiene el envío del formulario
+    }
+});
+
+</script>
